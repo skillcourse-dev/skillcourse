@@ -1,0 +1,39 @@
+{
+  "name": "@skillcourse-dev/shared",
+  "version": "0.0.1",
+  "description": "Zod schemas and pure-function parser for skillcourse course folders.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skillcourse-dev/skillcourse.git",
+    "directory": "packages/shared"
+  },
+  "homepage": "https://skillcourse.dev",
+  "bugs": "https://github.com/skillcourse-dev/skillcourse/issues",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "semver": "^7.6.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/semver": "^7.5.8",
+    "vitest": "^2.1.8"
+  }
+}
