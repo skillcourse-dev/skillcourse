@@ -1,0 +1,27 @@
+name: Bug report
+description: Something broke or behaves unexpectedly
+labels: ["bug", "triage"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug, what you expected, and what you saw.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction steps
+      description: Minimal steps to reproduce. Include OS, Node, pnpm versions.
+      placeholder: |
+        1. `pnpm install`
+        2. `pnpm test`
+        3. See error...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / error output
+      render: shell
