@@ -7,3 +7,4 @@ export { parseFrontmatter, type SkillFrontmatter, type ParsedSkillMd } from './p
 export { parseChapters, type Chapter } from './parser/chapters.js';
 export { parseCompanionSkills, type CompanionSkill } from './parser/companion-skills.js';
 export { estimateChapterMinutes } from './parser/estimated-minutes.js';
+export { loadCourse, type Course, type ChapterWithMinutes } from './parser/course.js';

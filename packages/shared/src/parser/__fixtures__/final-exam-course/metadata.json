@@ -1,0 +1,8 @@
+{
+  "type": "course",
+  "version": "0.1.0",
+  "title": { "en": "Final exam course" },
+  "description": { "en": "Exercises final_exam mode." },
+  "author": "skillcourse-dev",
+  "license": "MIT"
+}

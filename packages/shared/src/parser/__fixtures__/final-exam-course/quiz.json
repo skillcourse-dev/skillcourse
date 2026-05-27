@@ -1,0 +1,13 @@
+{
+  "presentation": "final_exam",
+  "chapters": {},
+  "final_exam": [
+    {
+      "id": "f1",
+      "type": "multiple_choice",
+      "question": { "en": "Q?" },
+      "options": [{ "en": "a" }, { "en": "b" }],
+      "answer": 0
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "type": "skill",
+  "version": "0.1.0",
+  "title": { "en": "Bad" },
+  "description": { "en": "Bad" },
+  "author": "test",
+  "license": "MIT"
+}

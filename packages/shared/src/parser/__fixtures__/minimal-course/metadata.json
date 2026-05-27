@@ -1,0 +1,9 @@
+{
+  "type": "course",
+  "version": "0.1.0",
+  "title": { "en": "Minimal course" },
+  "description": { "en": "A two-chapter test course." },
+  "author": "skillcourse-dev",
+  "license": "MIT",
+  "recommended_skills": ["skill-creator"]
+}
