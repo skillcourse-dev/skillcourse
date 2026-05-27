@@ -1,0 +1,42 @@
+{
+  "$schema": "https://skillcourse.dev/schema/quiz-v1.json",
+  "presentation": "per_chapter",
+  "passing_score": 0.7,
+  "chapters": {
+    "1": [
+      {
+        "id": "ch1-q1",
+        "type": "multiple_choice",
+        "question": { "en": "What three fields must appear in SKILL.md frontmatter?" },
+        "options": [
+          { "en": "name, description, license" },
+          { "en": "name, version, author" },
+          { "en": "title, body, tags" }
+        ],
+        "answer": 0,
+        "explanation": { "en": "The Anthropic Skills spec defines exactly these three." }
+      }
+    ],
+    "2": [
+      {
+        "id": "ch2-q1",
+        "type": "multiple_choice",
+        "question": { "en": "Which markdown heading level is a chapter boundary?" },
+        "options": [
+          { "en": "H1 (# ...)" },
+          { "en": "H2 (## ...)" },
+          { "en": "H3 (### ...)" }
+        ],
+        "answer": 1
+      }
+    ],
+    "3": [
+      {
+        "id": "ch3-q1",
+        "type": "short_answer",
+        "question": { "en": "Name one step in the minimal publication flow." },
+        "rubric": { "en": "Accept any of: init via CLI, edit SKILL.md, run validate, commit, push." }
+      }
+    ]
+  }
+}

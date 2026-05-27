@@ -1,0 +1,10 @@
+{
+  "type": "course",
+  "version": "0.1.0",
+  "title": { "en": "Hello, skillcourse" },
+  "description": { "en": "A 3-chapter intro to authoring your first agent skill on the skillcourse platform." },
+  "tags": ["beginner", "authoring", "skills"],
+  "author": "skillcourse-dev",
+  "license": "MIT",
+  "recommended_skills": ["skill-creator", "skill-linter"]
+}
