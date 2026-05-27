@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import { createRequire } from 'node:module';
+import { registerInit } from './commands/init.js';
+import { registerValidate } from './commands/validate.js';
+import { registerBump } from './commands/bump.js';
+import { registerQuizInit } from './commands/quiz-init.js';
 
 const require = createRequire(import.meta.url);
 const pkg = require('../package.json') as { version: string };
@@ -11,33 +15,10 @@ program
   .description('Authoring CLI for skillcourse courses')
   .version(pkg.version);
 
-program
-  .command('init <slug>')
-  .description('Scaffold a new course folder')
-  .action(() => {
-    throw new Error('init command not implemented yet');
-  });
-
-program
-  .command('validate [path]')
-  .description('Validate a course folder')
-  .action(() => {
-    throw new Error('validate command not implemented yet');
-  });
-
-program
-  .command('bump <type>')
-  .description('Bump course version (patch | minor | major)')
-  .action(() => {
-    throw new Error('bump command not implemented yet');
-  });
-
-program
-  .command('quiz <subcommand>')
-  .description('Quiz subcommands (init)')
-  .action(() => {
-    throw new Error('quiz command not implemented yet');
-  });
+registerInit(program);
+registerValidate(program);
+registerBump(program);
+registerQuizInit(program);
 
 program.parseAsync(process.argv).catch((err: Error) => {
   console.error(err.message);
