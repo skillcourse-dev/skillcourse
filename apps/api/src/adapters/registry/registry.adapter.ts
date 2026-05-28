@@ -31,3 +31,10 @@ export class CourseNotFoundError extends Error {
     this.name = 'CourseNotFoundError';
   }
 }
+
+export class InvalidSlugError extends Error {
+  constructor(public readonly slug: string) {
+    super(`invalid course slug: ${slug} (must be kebab-case, lowercase letters/digits/hyphens only)`);
+    this.name = 'InvalidSlugError';
+  }
+}

@@ -1,8 +1,10 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest';
+import { mkdtemp, cp, rm, utimes, writeFile, readFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import { FilesystemRegistry } from './filesystem.adapter.js';
-import { CourseNotFoundError } from './registry.adapter.js';
+import { CourseNotFoundError, InvalidSlugError } from './registry.adapter.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixtureRegistry = resolve(here, '__fixtures__', 'sample-registry', 'courses');
@@ -42,5 +44,53 @@ describe('FilesystemRegistry', () => {
   it('list() returns empty array when coursesDir does not exist', async () => {
     const empty = new FilesystemRegistry({ coursesDir: join(here, '__missing__') });
     expect(await empty.list()).toEqual([]);
+  });
+
+  it('load() rejects path-traversal and non-conforming slugs with InvalidSlugError', async () => {
+    await expect(registry.load('../etc')).rejects.toBeInstanceOf(InvalidSlugError);
+    await expect(registry.load('a/b')).rejects.toBeInstanceOf(InvalidSlugError);
+    await expect(registry.load('UPPERCASE')).rejects.toBeInstanceOf(InvalidSlugError);
+    await expect(registry.load('with.dot')).rejects.toBeInstanceOf(InvalidSlugError);
+  });
+
+  it('list() returns conforming-slug fixture courses (defense-in-depth check)', async () => {
+    const summaries = await registry.list();
+    expect(summaries.map((s) => s.slug)).toEqual(['alpha', 'beta']);
+  });
+});
+
+describe('FilesystemRegistry cache invalidation', () => {
+  let tmpDir: string;
+  let registry: FilesystemRegistry;
+
+  beforeEach(async () => {
+    tmpDir = await mkdtemp(join(tmpdir(), 'skillcourse-api-fs-cache-'));
+    await cp(fixtureRegistry, tmpDir, { recursive: true });
+    registry = new FilesystemRegistry({ coursesDir: tmpDir });
+  });
+
+  afterEach(async () => {
+    await rm(tmpDir, { recursive: true, force: true });
+  });
+
+  it('invalidates the cache when SKILL.md mtime changes', async () => {
+    const a = await registry.load('alpha');
+    const future = new Date(Date.now() + 1000);
+    await utimes(join(tmpDir, 'alpha', 'SKILL.md'), future, future);
+    const b = await registry.load('alpha');
+    expect(b).not.toBe(a);
+  });
+
+  it('invalidates the cache when metadata.json changes (without touching SKILL.md)', async () => {
+    const a = await registry.load('alpha');
+    const metaPath = join(tmpDir, 'alpha', 'metadata.json');
+    const meta = JSON.parse(await readFile(metaPath, 'utf8'));
+    meta.version = '0.1.1';
+    await writeFile(metaPath, JSON.stringify(meta, null, 2) + '\n', 'utf8');
+    const future = new Date(Date.now() + 1000);
+    await utimes(metaPath, future, future);
+    const b = await registry.load('alpha');
+    expect(b).not.toBe(a);
+    expect(b.metadata.version).toBe('0.1.1');
   });
 });

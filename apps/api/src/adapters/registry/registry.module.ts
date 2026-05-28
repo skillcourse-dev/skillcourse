@@ -1,9 +1,8 @@
-import { Module, Global } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { resolve } from 'node:path';
 import { COURSE_REGISTRY_ADAPTER, type CourseRegistryAdapter } from './registry.adapter.js';
 import { FilesystemRegistry } from './filesystem.adapter.js';
 
-@Global()
 @Module({
   providers: [
     {
