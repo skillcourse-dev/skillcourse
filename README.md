@@ -14,6 +14,10 @@ Status: **pre-release**. v0.1.0 in active development.
 - `@skillcourse-dev/shared` zod schemas for `metadata.json` and `quiz.json`.
 - Pure-function parsers for SKILL.md frontmatter, H2 chapters, companion-skills section, and estimated minutes.
 - `loadCourse(dir)` returns a fully-typed `Course`.
+- `@skillcourse-dev/cli` with `init`, `validate`, `bump`, `quiz init` commands.
+- `@skillcourse-dev/api` NestJS HTTP service with `GET /health`, `GET /courses`, `GET /courses/:slug`, `GET /courses/:slug/chapters/:index`.
+- `DatabaseAdapter` (SQLite default, file at `./data/skillcourse.db`).
+- `CourseRegistryAdapter` (filesystem default, reads `./courses/`, mtime-keyed in-memory cache).
 - Sample course at `courses/hello-skillcourse/` with 3 chapters, 2 companion skills, and a 3-question quiz.
 - CI: typecheck, test, build, CodeQL, dependency-review.
 - Dependabot, branch protection, issue + PR templates, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY.
@@ -22,8 +26,11 @@ Status: **pre-release**. v0.1.0 in active development.
 
 ```
 skillcourse/
+├── apps/
+│   └── api/                 # NestJS HTTP service
 ├── packages/
-│   └── shared/              # zod schemas + course parser
+│   ├── shared/              # zod schemas + course parser
+│   └── cli/                 # authoring CLI
 ├── courses/
 │   └── hello-skillcourse/   # sample course
 └── docs/                    # spec (coming in a later milestone)
@@ -36,6 +43,7 @@ pnpm install
 pnpm -r typecheck
 pnpm -r test
 pnpm -r build
+pnpm --filter @skillcourse-dev/api dev   # NestJS dev server on :3000
 ```
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full development loop and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) for community norms.
