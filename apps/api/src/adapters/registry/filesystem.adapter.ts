@@ -5,6 +5,7 @@ import {
   type CourseRegistryAdapter,
   type CourseSummary,
   CourseNotFoundError,
+  InvalidSlugError,
 } from './registry.adapter.js';
 
 export interface FilesystemRegistryOpts {
@@ -14,8 +15,18 @@ export interface FilesystemRegistryOpts {
 
 interface CacheEntry {
   course: Course;
+  /** max(mtime) of every file that contributes to the parsed Course. */
   mtime: number;
 }
+
+/** Slugs are kebab-case-ish (matches our init validation). Rejecting non-conforming slugs
+ *  also blocks path-traversal vectors like "../../etc/passwd". */
+const VALID_SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+/** Files whose mtime can invalidate a cached Course. SKILL.md alone is not enough:
+ *  authors who edit metadata.json (title, description, version, recommended_skills)
+ *  or quiz.json without touching SKILL.md would otherwise see stale data. */
+const CACHE_KEY_FILES = ['SKILL.md', 'metadata.json', 'quiz.json'] as const;
 
 /**
  * FilesystemRegistry: reads `<coursesDir>/<slug>/` folders. Each must be a valid
@@ -38,6 +49,7 @@ export class FilesystemRegistry implements CourseRegistryAdapter {
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
       const name = typeof entry.name === 'string' ? entry.name : entry.name.toString('utf8');
+      if (!VALID_SLUG.test(name)) continue;
       try {
         const course = await this.load(name);
         summaries.push({
@@ -57,27 +69,44 @@ export class FilesystemRegistry implements CourseRegistryAdapter {
   }
 
   async load(slug: string): Promise<Course> {
+    if (!VALID_SLUG.test(slug)) {
+      throw new InvalidSlugError(slug);
+    }
     const courseDir = join(this.coursesDir, slug);
-    const skillMtime = await this.skillMtime(courseDir);
-    if (skillMtime === null) {
+    const mtime = await this.courseMtime(courseDir);
+    if (mtime === null) {
       throw new CourseNotFoundError(slug);
     }
     const cached = this.cache.get(slug);
-    if (cached && cached.mtime === skillMtime) {
+    if (cached && cached.mtime === mtime) {
       return cached.course;
     }
     const course = await loadCourse(courseDir);
-    this.cache.set(slug, { course, mtime: skillMtime });
+    this.cache.set(slug, { course, mtime });
     return course;
   }
 
-  private async skillMtime(courseDir: string): Promise<number | null> {
-    try {
-      const s = await stat(join(courseDir, 'SKILL.md'));
-      return s.mtimeMs;
-    } catch (err) {
-      if ((err as NodeJS.ErrnoException).code === 'ENOENT') return null;
-      throw err;
+  /** Returns max(mtimeMs) across CACHE_KEY_FILES, or null if SKILL.md does not exist
+   *  (a course without SKILL.md is not a course). Missing optional files (metadata.json,
+   *  quiz.json) are ignored when computing the max. */
+  private async courseMtime(courseDir: string): Promise<number | null> {
+    const mtimes: (number | null)[] = await Promise.all(
+      CACHE_KEY_FILES.map(async (filename) => {
+        try {
+          const s = await stat(join(courseDir, filename));
+          return s.mtimeMs;
+        } catch (err) {
+          if ((err as NodeJS.ErrnoException).code === 'ENOENT') return null;
+          throw err;
+        }
+      }),
+    );
+    // CACHE_KEY_FILES[0] is SKILL.md; if it's missing, the course doesn't exist.
+    if (mtimes[0] === null) return null;
+    let max = 0;
+    for (const m of mtimes) {
+      if (m !== null && m > max) max = m;
     }
+    return max;
   }
 }
