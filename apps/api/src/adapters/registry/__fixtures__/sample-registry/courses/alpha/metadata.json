@@ -1,0 +1,9 @@
+{
+  "type": "course",
+  "version": "0.1.0",
+  "title": { "en": "Alpha" },
+  "description": { "en": "Alpha test course." },
+  "author": "skillcourse-dev",
+  "license": "MIT",
+  "recommended_skills": ["alpha-helper"]
+}

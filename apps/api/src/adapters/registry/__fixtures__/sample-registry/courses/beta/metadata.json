@@ -1,0 +1,9 @@
+{
+  "type": "course",
+  "version": "0.1.0",
+  "title": { "en": "Beta" },
+  "description": { "en": "Beta test course." },
+  "author": "skillcourse-dev",
+  "license": "MIT",
+  "recommended_skills": ["beta-helper"]
+}
