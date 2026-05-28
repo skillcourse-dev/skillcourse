@@ -59,13 +59,13 @@ describe('full authoring flow', () => {
     const validate1 = run(['validate', courseDir], workDir);
     expect(validate1.status, validate1.stderr).toBe(0);
 
-    const quizInit = run(['quiz', 'init', '--path', courseDir, '--mode', 'per_chapter'], workDir);
+    const quizInit = run(['quiz', 'init', courseDir, '--mode', 'per_chapter'], workDir);
     expect(quizInit.status, quizInit.stderr).toBe(0);
 
     const validate2 = run(['validate', courseDir], workDir);
     expect(validate2.status, validate2.stderr).toBe(0);
 
-    const bump = run(['bump', 'patch', '--summary', 'fixed something', '--path', courseDir], workDir);
+    const bump = run(['bump', 'patch', courseDir, '--summary', 'fixed something'], workDir);
     expect(bump.status, bump.stderr).toBe(0);
 
     const metadata = JSON.parse(await readFile(join(courseDir, 'metadata.json'), 'utf8'));

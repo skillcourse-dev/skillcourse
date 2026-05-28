@@ -71,4 +71,33 @@ describe('runBump', () => {
       /metadata\.json/,
     );
   });
+
+  it('throws with file context when metadata.json is corrupt JSON', async () => {
+    await writeFile(join(courseDir, 'metadata.json'), '{not valid json', 'utf8');
+    await expect(runBump({ courseDir, kind: 'patch', summary: 'x' })).rejects.toThrow(
+      /metadata\.json.*not valid JSON/,
+    );
+  });
+
+  it('throws with file context when metadata.json fails schema (missing version)', async () => {
+    await writeFile(
+      join(courseDir, 'metadata.json'),
+      JSON.stringify({ type: 'course', title: { en: 'T' }, description: { en: 'D' }, author: 'a', license: 'MIT' }),
+      'utf8',
+    );
+    await expect(runBump({ courseDir, kind: 'patch', summary: 'x' })).rejects.toThrow(
+      /metadata\.json invalid/,
+    );
+  });
+
+  it('throws when CHANGELOG.md is missing (does NOT silently create one)', async () => {
+    await rm(join(courseDir, 'CHANGELOG.md'));
+    await expect(runBump({ courseDir, kind: 'patch', summary: 'x' })).rejects.toThrow(
+      /CHANGELOG\.md not found/,
+    );
+
+    // Verify metadata.json was NOT mutated when CHANGELOG check failed
+    const meta = JSON.parse(await readFile(join(courseDir, 'metadata.json'), 'utf8'));
+    expect(meta.version).toBe('1.0.0');
+  });
 });

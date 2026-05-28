@@ -50,13 +50,12 @@ export function registerQuizInit(program: Command): void {
   const quiz = program.command('quiz').description('Quiz subcommands');
 
   quiz
-    .command('init')
-    .description('Scaffold quiz.json mirroring the chapter structure of SKILL.md')
+    .command('init [path]')
+    .description('Scaffold quiz.json mirroring the chapter structure of SKILL.md. Default path: cwd.')
     .option('--mode <mode>', 'per_chapter | final_exam | both', 'per_chapter')
-    .option('--path <path>', 'Course folder (default: cwd)')
     .option('--force', 'Overwrite an existing quiz.json', false)
-    .action(async (options: { mode?: QuizMode; path?: string; force?: boolean }) => {
-      const courseDir = options.path ?? process.cwd();
+    .action(async (path: string | undefined, options: { mode?: QuizMode; force?: boolean }) => {
+      const courseDir = path ?? process.cwd();
       await runQuizInit({
         courseDir,
         mode: options.mode ?? 'per_chapter',
