@@ -1,4 +1,8 @@
-import type { Course, CourseMetadata } from '@skillcourse-dev/shared';
+import type { Course, CourseSummary } from '@skillcourse-dev/shared';
+
+// Re-export so consumers in this package can `import { ... } from './registry.adapter.js'`
+// without reaching across packages. Source of truth lives in @skillcourse-dev/shared.
+export type { CourseSummary };
 
 /**
  * CourseRegistryAdapter is the source-of-truth abstraction for "where do courses live?".
@@ -9,18 +13,6 @@ export interface CourseRegistryAdapter {
   list(): Promise<CourseSummary[]>;
   /** Returns the fully-parsed Course for a single slug. Throws CourseNotFoundError if absent. */
   load(slug: string): Promise<Course>;
-}
-
-// Structural aliases to whatever LocalizedString shape lives in @skillcourse-dev/shared.
-// Avoids re-declaring an index signature that may not satisfy the source type
-// under exactOptionalPropertyTypes + noUncheckedIndexedAccess.
-export interface CourseSummary {
-  slug: string;
-  title: CourseMetadata['title'];
-  description: CourseMetadata['description'];
-  version: string;
-  chapterCount: number;
-  estimatedMinutes: number;
 }
 
 export const COURSE_REGISTRY_ADAPTER = Symbol('COURSE_REGISTRY_ADAPTER');
