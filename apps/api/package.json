@@ -20,7 +20,7 @@
     "@nestjs/platform-express": "^11.0.0",
     "@skillcourse-dev/shared": "workspace:*",
     "better-sqlite3": "^11.7.0",
-    "drizzle-orm": "^0.36.4",
+    "drizzle-orm": "^0.45.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
