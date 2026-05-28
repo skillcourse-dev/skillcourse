@@ -1,0 +1,16 @@
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'happy-dom',
+    environmentOptions: {
+      happyDOM: { url: 'http://localhost' },
+    },
+    globals: false,
+    include: ['src/**/*.test.{ts,tsx}'],
+    setupFiles: ['./src/test-setup.ts'],
+    testTimeout: 15000,
+  },
+});
